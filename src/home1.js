@@ -34,7 +34,7 @@ const Home1 = () => {
                 <h1>Welcome to SwinAI</h1>
                 <h2>Transforming the Future of AI Interaction</h2>
                 <p>Your all-in-one platform for secure, human-like, and automated AI solutions</p>
-                <button className="cta-button">Get Started</button>
+                <button className="cta-button" onClick={() => navigate('/login')}>Get Started</button>
             </div>
 
             <div className="features-grid">
@@ -72,7 +72,7 @@ const Home1 = () => {
                 <button className="cta-button">Start Free Trial</button>
             </div>
 
-            <button onClick={() => navigate('/login')}>Login</button>
+            
         </div>
      );
 }

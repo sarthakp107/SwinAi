@@ -49,7 +49,8 @@
 .navbar-links a[href="/register"] {
     background-color: #dc3545;
     color: white;
-    border: 10px solid #dc3545;
+    border: 11px solid #dc3545;
+    border-radius: 10px;
 }
 
 .navbar-links a[href="/register"]:hover {
