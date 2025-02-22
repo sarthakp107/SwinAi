@@ -1,0 +1,25 @@
+.verification-content {
+    padding: 2rem;
+}
+
+.email-icon {
+    font-size: 4rem;
+}
+
+.verification-content p {
+    color: #666;
+    line-height: 1.6;
+}
+
+.verification-content strong {
+    color: #333;
+    word-break: break-all;
+}
+
+.btn {
+    margin-bottom: 1rem;
+}
+
+.btn:last-child {
+    margin-bottom: 0;
+} 
