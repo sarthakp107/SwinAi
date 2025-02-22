@@ -1,34 +1,29 @@
 import React from 'react';
-import './Login.css'; 
+import './Login.css';
 import { CardImg, FormGroup, Label, Input, Button } from 'reactstrap';
+import swinai from '../../assets/swinai.png';
 import { useNavigate } from 'react-router-dom';
-import swinai from './swinai.png';
 
-const Register = () => {
+const Login = () => {
     const navigate = useNavigate();
-
+    
     return (
         <div className="background">
           <div className="login-box">
             <div className="container">
-              <div className="row app-des">
-                <div className="col left-background">
+              <div class="row app-des">
+                <div class="col left-background ">
+                 
                   <CardImg
                     className="mobile-img"
                     src={swinai}
                     alt="mobile-App"
                   />
                 </div>
-                <div className="col login-form">
+                <div class="col login-form">
                   <form>
-                    <h2 className="font-weight-bold mb-4">Register</h2>
+                    <h2 className="font-weight-bold mb-4">Login</h2>
                     <FormGroup>
-                      <Label className="font-weight-bold mb-2">Full Name</Label>
-                      <Input
-                        className="mb-3"
-                        type="text"
-                        placeholder="John Doe"
-                      />
                       <Label className="font-weight-bold mb-2">Email</Label>
                       <Input
                         className="mb-3"
@@ -41,27 +36,23 @@ const Register = () => {
                         type="password"
                         placeholder="At least 8 characters"
                       />
-                      <Label className="font-weight-bold mb-2">Confirm Password</Label>
-                      <Input
-                        className="mb-3"
-                        type="password"
-                        placeholder="Confirm your password"
-                      />
                     </FormGroup>
-                    <Button className="mt-3 btn">Register</Button>
+                    <Button className="mt-3  btn">Login</Button>
                     <Button 
-                      className="mt-3 btn"
-                      onClick={() => navigate('/login')}
+                      className="mt-3  btn"
+                      onClick={() => navigate('/register')}
                     >
-                      Already have an account? Login
+                      Don't have an account? Sign up
                     </Button>
+                    {/* <div className="text-center m-4">or continue with social account</div>
+                  <GoogleLoginButton className="mt-3 mb-3 px-auto text-center"/> */}
                   </form>
                 </div>
               </div>
             </div>
           </div>
         </div>
-    );
+);
 };
 
-export default Register; 
+export default Login;
