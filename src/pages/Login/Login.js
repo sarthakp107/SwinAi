@@ -32,7 +32,7 @@ const Login = () => {
             }
 
             if (data.user) {
-                navigate('/');
+                navigate('/topics');
             }
         } catch (error) {
             setError("An error occurred during login");

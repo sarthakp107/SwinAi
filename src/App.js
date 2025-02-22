@@ -1,3 +1,4 @@
+import React from 'react';
 import './App.css';
 // import Navbar1 from './components/Navbar1';
 import Navbar1 from './components/Navbar1.js';
@@ -6,22 +7,26 @@ import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import Verification from './pages/Verification/Verification';
 import Profile from './pages/Profile/Profile';
+import TopicSelection from './pages/TopicSelection/TopicSelection';
+import AIHumanizer from './pages/AIHumanizer/AIHumanizer';
 import { Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
-   <div className="min-h-screen bg-gray-50">
+    <div className="app">
       <Navbar1 />
-      <main className="container mx-auto px-4">
+      <main className="main-content">
         <Routes>
           <Route path="/" element={<Home1 />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify" element={<Verification />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/topics" element={<TopicSelection />} />
+          <Route path="/dashboard/ai-humanizer" element={<AIHumanizer />} />
         </Routes>
       </main>
-   </div>
+    </div>
   );
 }
 
