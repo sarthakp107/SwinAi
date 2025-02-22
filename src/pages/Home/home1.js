@@ -1,5 +1,5 @@
 import './Home1.css'; 
-import FeatureCard from './components/FeatureCard';
+import FeatureCard from '../../components/FeatureCard';
 import { useNavigate } from 'react-router-dom';
 
 const Home1 = () => {
