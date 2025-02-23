@@ -36,3 +36,21 @@
     transform: rotate(360deg);
   }
 }
+
+.app {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.main-content {
+    padding-top: 70px; /* Same as navbar height */
+    min-height: calc(100vh - 70px); /* Subtract navbar height */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-content {
+        padding-top: 60px; /* Match smaller navbar height on mobile */
+        min-height: calc(100vh - 60px);
+    }
+}

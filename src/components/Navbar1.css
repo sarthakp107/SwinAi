@@ -2,58 +2,211 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
+    padding: 0.75rem 4rem;
     background-color: white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 70px;
 }
 
-.navbar1 img {
-    height: 70px; 
+.nav-logo {
+    display: flex;
+    align-items: center;
+}
+
+.nav-logo img {
+    height: 45px;
+    width: auto;
 }
 
 .navbar-links {
     display: flex;
-    gap: 2rem;
     align-items: center;
+    gap: 2.5rem;
 }
 
-.navbar-links a {
+.nav-link {
     text-decoration: none;
-    color: #333;
+    color: #666;
     font-weight: 500;
+    font-size: 0.95rem;
     transition: color 0.3s ease;
 }
 
-.navbar-links a:hover {
-    color: #dc3545;  /* Changed to red to match the theme */
+.nav-link:hover {
+    color: #dc3545;
 }
 
-/* Styling for Login and Register buttons */
-.navbar-links a[to="/login"],
-.navbar-links a[to="/register"] {
-    padding: 0.5rem 1.2rem;
-    border-radius: 5px;
+/* Auth Buttons */
+.auth-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-left: 1rem;
+}
+
+.login-btn, .register-btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
     transition: all 0.3s ease;
+    font-size: 0.95rem;
 }
 
-.navbar-links a[to="/login"] {
+.login-btn {
     border: 2px solid #dc3545;
     color: #dc3545;
 }
 
-.navbar-links a[to="/login"]:hover {
+.login-btn:hover {
     background-color: #dc3545;
     color: white;
 }
 
-.navbar-links a[href="/register"] {
+.register-btn {
     background-color: #dc3545;
     color: white;
-    border: 11px solid #dc3545;
-    border-radius: 10px;
 }
 
-.navbar-links a[href="/register"]:hover {
+.register-btn:hover {
     background-color: #c82333;
-    border-color: #c82333;
+}
+
+/* Profile Dropdown */
+.profile-dropdown {
+    position: relative;
+}
+
+.avatar-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #dc3545;
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.avatar-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+.profile-dropdown-content {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 280px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.dropdown-header {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+.user-name {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.user-email {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #eee;
+    margin: 0.5rem 0;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-size: 1rem;
+}
+
+.dropdown-item:hover {
+    background: #f8f9fa;
+    color: #dc3545;
+}
+
+.dropdown-item i {
+    width: 20px;
+    text-align: center;
+    color: #666;
+}
+
+.dropdown-item:hover i {
+    color: #dc3545;
+}
+
+.logout-item {
+    color: #dc3545;
+}
+
+.logout-item i {
+    color: #dc3545;
+}
+
+.logout-item:hover {
+    background: #fff1f1;
+}
+
+/* Updated responsive design */
+@media (max-width: 1024px) {
+    .navbar1 {
+        padding: 0.75rem 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar1 {
+        padding: 0.75rem 1rem;
+        height: 60px;
+    }
+
+    .nav-logo img {
+        height: 35px;
+    }
+
+    .navbar-links {
+        gap: 1.5rem;
+    }
+
+    .auth-buttons {
+        gap: 0.75rem;
+        margin-left: 0.75rem;
+    }
+
+    .login-btn, .register-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
 }
