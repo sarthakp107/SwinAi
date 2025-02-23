@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as pdfjs from 'pdfjs-dist';
 import useOpenRouter from '../../hooks/useOpenRouter';
 import './AIDetection.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Configure PDF.js worker
 const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
@@ -163,7 +163,7 @@ const AIDetection = () => {
                                 <Link 
                                     to="/ai-humanizer" 
                                     className="humanize-button"
-                                    state={{ text: text }}
+                                    state={{ textToHumanize: text }}
                                 >
                                     <i className="fas fa-magic"></i>
                                     Humanize Text
