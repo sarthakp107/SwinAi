@@ -15,6 +15,7 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+        setError(null);
         
         try {
             const { data, error } = await supabase.auth.signInWithPassword({
@@ -43,66 +44,63 @@ const Login = () => {
     
     return (
         <div className="background">
-          <div className="login-box">
-            <div className="container">
-              <div className="row app-des">
-                <div className="col left-background">
-                  <CardImg
-                    className="mobile-img"
-                    src={swinai}
-                    alt="mobile-App"
-                  />
+            <div className="login-box">
+                <div className="login-logo-section">
+                    <CardImg src={swinai} alt="Logo" className="login-logo" />
                 </div>
-                <div className="col login-form">
-                  <form onSubmit={handleLogin}>
-                    <h2 className="font-weight-bold mb-4">Login</h2>
-                    {error && (
-                      <div className="alert alert-danger" role="alert">
-                        {error}
-                      </div>
-                    )}
-                    <div className="form-group">
-                      <label className="font-weight-bold mb-2">Email</label>
-                      <input
-                        className="form-control mb-3"
-                        type="email"
-                        placeholder="John@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                      />
-                      <label className="font-weight-bold mb-2">Password</label>
-                      <input
-                        className="form-control mb-3"
-                        type="password"
-                        placeholder="At least 8 characters"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                      />
+                <div className="login-form-section">
+                    <div className="login-header">
+                        <h2>Welcome Back!</h2>
+                        <p>Please sign in to continue</p>
                     </div>
-                    <button 
-                      type="submit" 
-                      className="btn btn-primary mt-3 w-100"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      ) : null}
-                      {isLoading ? 'Logging in...' : 'Login'}
-                    </button>
-                    <button 
-                      type="button"
-                      className="btn btn-outline-primary mt-3 w-100"
-                      onClick={() => navigate('/register')}
-                    >
-                      Don't have an account? Sign up
-                    </button>
-                  </form>
+
+                    <form className="login-form" onSubmit={handleLogin}>
+                        {error && <div className="error-message">{error}</div>}
+                        
+                        <FormGroup>
+                            <Label for="email">Email</Label>
+                            <Input
+                                type="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </FormGroup>
+
+                        <FormGroup>
+                            <Label for="password">Password</Label>
+                            <Input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </FormGroup>
+
+                        <Button 
+                            color="primary" 
+                            type="submit" 
+                            disabled={isLoading}
+                            className="submit-button"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <span className="spinner-border spinner-border-sm me-2"></span>
+                                    Signing in...
+                                </>
+                            ) : (
+                                'Sign In'
+                            )}
+                        </Button>
+                    </form>
+
+                    <div className="login-footer">
+                        <p>Don't have an account? <a href="/register">Register</a></p>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
         </div>
     );
 };

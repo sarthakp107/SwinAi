@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../../config/Supabase';
 import './TopicSelection.css';
+import { useAuth } from '../../context/AuthContext';
 
 const topics = [
     {
@@ -40,29 +41,8 @@ const topics = [
 
 const TopicSelection = () => {
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [selectedTopic, setSelectedTopic] = useState(null);
-
-    useEffect(() => {
-        const getUser = async () => {
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) {
-                    navigate('/login');
-                    return;
-                }
-                setUser(user);
-            } catch (error) {
-                console.error('Error fetching user:', error);
-                navigate('/login');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        getUser();
-    }, [navigate]);
+    const { user, loading } = useAuth();
 
     const handleTopicSelect = async (topic) => {
         setSelectedTopic(topic.id);
