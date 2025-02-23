@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as pdfjs from 'pdfjs-dist';
 import useOpenRouter from '../../hooks/useOpenRouter';
 import './AIDetection.css';
+import { Link } from 'react-router-dom';
 
 // Configure PDF.js worker
 const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
@@ -154,9 +155,29 @@ const AIDetection = () => {
                                 }}>
                                     <div className="percentage-inner">
                                         <span className="percentage-value">{result.aiProbability}%</span>
-                                        <span className="percentage-label">AI Probability</span>
+                                        {/* <span className="percentage-label">AI Probability</span> */}
                                     </div>
                                 </div>
+                            </div>
+                            <div className="action-buttons">
+                                <Link 
+                                    to="/ai-humanizer" 
+                                    className="humanize-button"
+                                    state={{ text: text }}
+                                >
+                                    <i className="fas fa-magic"></i>
+                                    Humanize Text
+                                </Link>
+                                <button 
+                                    className="try-again-button"
+                                    onClick={() => {
+                                        setText('');
+                                        setResult(null);
+                                    }}
+                                >
+                                    <i className="fas fa-redo"></i>
+                                    Try Again
+                                </button>
                             </div>
                         </div>
                     ) : (

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 // const OPENROUTER_API_KEY = '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';
-const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+// const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 const useOpenRouter = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -12,11 +12,11 @@ const useOpenRouter = () => {
         setError(null);
 
         try {
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer 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`,
+                    'Authorization': `Bearer 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`,
                     'HTTP-Referer': window.location.origin,
                     'X-Title': 'SwinAI'
                 },
@@ -24,7 +24,7 @@ const useOpenRouter = () => {
                     model: 'deepseek/deepseek-r1:free',
                     messages: messages,
                     temperature: 0.3,
-                    max_tokens: 1000
+                    max_tokens: 2000
                 })
             });
 
@@ -32,7 +32,8 @@ const useOpenRouter = () => {
             console.log('API Response:', responseData);
 
             if (!response.ok) {
-                throw new Error(responseData.error?.message || 'API request failed');
+                console.error('Response not OK:', response.status, responseData);
+                throw new Error(responseData.error?.message || `API request failed with status ${response.status}`);
             }
 
             const content = responseData.choices[0].message.content;
