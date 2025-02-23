@@ -11,7 +11,7 @@ const topics = [
         description: 'Transform robotic AI responses into natural, human-like conversations. Make your AI interactions more engaging and personable.',
         icon: '👨‍🎓',
         color: '#4CAF50',
-        path: '/dashboard/ai-humanizer'
+        path: '/ai-humanizer'
     },
     {
         id: 'security',
@@ -35,7 +35,7 @@ const topics = [
         description: 'Identify AI-generated content with high accuracy. Maintain authenticity in your digital communications.',
         icon: '🔍',
         color: '#9C27B0',
-        path: '/dashboard/detector'
+        path: '/ai-detector'
     }
 ];
 
@@ -54,8 +54,6 @@ const TopicSelection = () => {
                     selected_topic: topic.id,
                     updated_at: new Date()
                 });
-
-            if (error) throw error;
             navigate(topic.path);
         } catch (error) {
             console.error('Error saving topic preference:', error);

@@ -9,6 +9,7 @@ import Verification from './pages/Verification/Verification';
 import Profile from './pages/Profile/Profile';
 import TopicSelection from './pages/TopicSelection/TopicSelection';
 import AIHumanizer from './pages/AIHumanizer/AIHumanizer';
+import AIDetection from './pages/AIDetection/AIDetection';
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
@@ -36,9 +37,14 @@ function App() {
                 <TopicSelection />
               </PrivateRoute>
             } />
-            <Route path="/dashboard/ai-humanizer" element={
+            <Route path="/ai-humanizer" element={
               <PrivateRoute>
                 <AIHumanizer />
+              </PrivateRoute>
+            } />
+            <Route path="/ai-detector" element={
+              <PrivateRoute>
+                <AIDetection />
               </PrivateRoute>
             } />
           </Routes>
