@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import './AIHumanizer.css';
 
 const AIHumanizer = () => {
+    const { user, loading } = useAuth();
     const [inputText, setInputText] = useState('');
     const [outputText, setOutputText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -10,6 +12,7 @@ const AIHumanizer = () => {
         setIsLoading(true);
         try {
             // TODO: Implement AI humanization logic
+            // This is where you'll integrate with your AI service
             setOutputText("Humanized version of your text will appear here");
         } catch (error) {
             console.error('Error:', error);
@@ -17,6 +20,16 @@ const AIHumanizer = () => {
             setIsLoading(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="tool-loading">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="tool-container">
