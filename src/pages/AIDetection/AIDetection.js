@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { pdfjs } from 'react-pdf';
+import * as pdfjs from 'pdfjs-dist';
 import './AIDetection.css';
 
-// Set up PDF.js worker from the installed package
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.min.js',
-    import.meta.url,
-).toString();
-
-// Alternative method if the above doesn't work
-// pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+// Configure PDF.js worker
+const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
+pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 const AIDetection = () => {
     const [text, setText] = useState('');
@@ -18,26 +13,12 @@ const AIDetection = () => {
     const [file, setFile] = useState(null);
     const [fileError, setFileError] = useState('');
 
-    useEffect(() => {
-        // Initialize PDF.js when component mounts
-        const initializePdfJs = async () => {
-            try {
-                await pdfjs.getDocument({ data: new Uint8Array() }).promise;
-            } catch (error) {
-                // Ignore the empty document error, we just want to initialize the worker
-            }
-        };
-        
-        initializePdfJs();
-    }, []);
-
     const extractTextFromPDF = async (file) => {
         try {
             const arrayBuffer = await file.arrayBuffer();
             const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
             let fullText = '';
 
-            // Extract text from each page
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const textContent = await page.getTextContent();
@@ -70,10 +51,8 @@ const AIDetection = () => {
             let extractedText = '';
 
             if (file.type === 'application/pdf') {
-                // Handle PDF files
                 extractedText = await extractTextFromPDF(file);
             } else {
-                // Handle text files
                 const reader = new FileReader();
                 extractedText = await new Promise((resolve, reject) => {
                     reader.onload = (e) => resolve(e.target.result);
