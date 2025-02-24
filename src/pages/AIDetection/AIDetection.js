@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import * as pdfjs from 'pdfjs-dist';
+import useOpenRouter from '../../hooks/useOpenRouter';
 import './AIDetection.css';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Configure PDF.js worker
 const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
@@ -9,9 +11,9 @@ pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 const AIDetection = () => {
     const [text, setText] = useState('');
     const [result, setResult] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
     const [file, setFile] = useState(null);
     const [fileError, setFileError] = useState('');
+    const { detectAI, isLoading, error } = useOpenRouter();
 
     const extractTextFromPDF = async (file) => {
         try {
@@ -45,7 +47,6 @@ const AIDetection = () => {
         }
 
         setFile(file);
-        setIsLoading(true);
 
         try {
             let extractedText = '';
@@ -66,32 +67,22 @@ const AIDetection = () => {
             console.error('Error reading file:', error);
             setFileError('Error reading file content. Please try another file.');
             setText('');
-        } finally {
-            setIsLoading(false);
         }
     };
 
     const handleDetection = async () => {
         if (!text.trim()) return;
         
-        setIsLoading(true);
         try {
-            // Your AI detection logic here
-            setTimeout(() => {
-                setResult({
-                    isAI: Math.random() > 0.5,
-                    confidence: Math.floor(Math.random() * 40) + 60,
-                    analysis: {
-                        grammar: Math.floor(Math.random() * 40) + 60,
-                        naturalness: Math.floor(Math.random() * 40) + 60,
-                        coherence: Math.floor(Math.random() * 40) + 60
-                    }
-                });
-                setIsLoading(false);
-            }, 1500);
+            const analysis = await detectAI(text);
+            if (analysis) {
+                setResult(analysis);
+            } else {
+                setFileError('Could not analyze text. Please try again.');
+            }
         } catch (error) {
-            console.error('Error:', error);
-            setIsLoading(false);
+            console.error('Error during analysis:', error);
+            setFileError('Error analyzing text');
         }
     };
 
@@ -105,7 +96,7 @@ const AIDetection = () => {
                         </div>
                         <div>
                             <h1 className="header-title">AI Text Detection</h1>
-                            <p className="header-subtitle">Check if text was written by AI or human</p>
+                            <p className="header-subtitle">Check if text was written by AI</p>
                         </div>
                     </div>
 
@@ -157,49 +148,38 @@ const AIDetection = () => {
 
                 <div className="result-section">
                     {result ? (
-                        <>
-                            <div className="result-header">
-                                <div className={`result-badge ${result.isAI ? 'ai' : 'human'}`}>
-                                    <i className={`fas ${result.isAI ? 'fa-robot' : 'fa-user'}`}></i>
-                                    {result.isAI ? 'AI Generated' : 'Human Written'}
-                                </div>
-                                <div className="confidence">
-                                    {result.confidence}% Confidence
-                                </div>
-                            </div>
-
-                            <div className="analysis-grid">
-                                <div className="analysis-card">
-                                    <div className="card-icon">
-                                        <i className="fas fa-spell-check"></i>
-                                    </div>
-                                    <div className="card-content">
-                                        <div className="card-title">Grammar Score</div>
-                                        <div className="card-value">{result.analysis.grammar}%</div>
-                                    </div>
-                                </div>
-
-                                <div className="analysis-card">
-                                    <div className="card-icon">
-                                        <i className="fas fa-comments"></i>
-                                    </div>
-                                    <div className="card-content">
-                                        <div className="card-title">Naturalness</div>
-                                        <div className="card-value">{result.analysis.naturalness}%</div>
-                                    </div>
-                                </div>
-
-                                <div className="analysis-card">
-                                    <div className="card-icon">
-                                        <i className="fas fa-link"></i>
-                                    </div>
-                                    <div className="card-content">
-                                        <div className="card-title">Coherence</div>
-                                        <div className="card-value">{result.analysis.coherence}%</div>
+                        <div className="result-content">
+                            <div className="percentage-display">
+                                <div className="percentage-circle" style={{
+                                    background: `conic-gradient(#ff0000 ${result.aiProbability}%, #f8f9fa ${result.aiProbability}% 100%)`
+                                }}>
+                                    <div className="percentage-inner">
+                                        <span className="percentage-value">{result.aiProbability}%</span>
+                                        {/* <span className="percentage-label">AI Probability</span> */}
                                     </div>
                                 </div>
                             </div>
-                        </>
+                            <div className="action-buttons">
+                                <Link 
+                                    to="/ai-humanizer" 
+                                    className="humanize-button"
+                                    state={{ textToHumanize: text }}
+                                >
+                                    <i className="fas fa-magic"></i>
+                                    Humanize Text
+                                </Link>
+                                <button 
+                                    className="try-again-button"
+                                    onClick={() => {
+                                        setText('');
+                                        setResult(null);
+                                    }}
+                                >
+                                    <i className="fas fa-redo"></i>
+                                    Try Again
+                                </button>
+                            </div>
+                        </div>
                     ) : (
                         <div className="empty-result">
                             <div className="empty-icon">

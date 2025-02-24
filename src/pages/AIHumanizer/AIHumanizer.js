@@ -1,13 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useLocation } from 'react-router-dom';
+import useOpenRouter from '../../hooks/useOpenRouter';
 import './AIHumanizer.css';
 
 const AIHumanizer = () => {
     const { user, loading } = useAuth();
+    const location = useLocation();
     const [inputText, setInputText] = useState('');
     const [outputText, setOutputText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
     const [copyStatus, setCopyStatus] = useState('idle');
+
+
+    const { humanizeText } = useOpenRouter();
+
+    useEffect(() => {
+        // Set the text from the detection page if available
+        if (location.state?.textToHumanize) {
+            setInputText(location.state.textToHumanize);
+        }
+    }, [location]);
+
 
     const handleHumanize = async () => {
         
@@ -65,6 +80,7 @@ const AIHumanizer = () => {
 Now, process the following text using these rules and return a fully humanized version. Do not include your reasoning or thinking in the output, the user MUST NOT see it, this is extremely important to follow:`;
 
         try {
+
             const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: {
@@ -126,9 +142,13 @@ Now, process the following text using these rules and return a fully humanized v
                     }
                 }
             }
+
+            const humanizedText = await humanizeText(inputText);
+            setOutputText(humanizedText || "Could not humanize the text. Please try again.");
+
         } catch (error) {
-            console.error('Detailed Error:', error);
-            setOutputText(`An error occurred: ${error.message}`);
+            console.error('Error:', error);
+            setOutputText("An error occurred while humanizing the text.");
         } finally {
             setIsLoading(false);
         }
@@ -163,7 +183,8 @@ Now, process the following text using these rules and return a fully humanized v
             <div className={`particles ${isLoading ? 'loading' : ''}`}></div>
             <div className="tool-header">
                 <h1>👨‍🎓 AI Humanizer</h1>
-                <p>Humanize your AI-generated text to pass AI detection systems</p>
+
+                <p>Transform robotic AI responses into natural, human-like conversations</p>
             </div>
 
             <div className={`tool-content ${isLoading ? 'loading' : ''}`}>
