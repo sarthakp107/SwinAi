@@ -12,7 +12,7 @@ const AIHumanizer = () => {
     const handleHumanize = async () => {
         
         setIsLoading(true);
-        setOutputText(''); // Clear previous output
+        setOutputText(''); 
         
         const systemPrompt = `Your task is to humanize the given text to the highest degree possible, ensuring that it mimics the writing style of real students from US and Australian universities before 2022. Your goal is to transform AI-generated content into text that flows naturally, is structured like human writing, and aligns with how students wrote their assignments before the widespread use of AI. Your output should NOT include your reasoning or thinking, the user MUST NOT see it. Follow these detailed instructions:
 
@@ -87,7 +87,7 @@ Now, process the following text using these rules and return a fully humanized v
                     ],
                     temperature: 0.7,
                     max_tokens: 4000,
-                    stream: true // Enable streaming
+                    stream: true 
                 })
             });
 
@@ -96,7 +96,7 @@ Now, process the following text using these rules and return a fully humanized v
                 throw new Error(`API Error: ${JSON.stringify(errorData)}`);
             }
 
-            // Set up streaming reader
+            // Streaming reader
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let buffer = '';
@@ -139,7 +139,7 @@ Now, process the following text using these rules and return a fully humanized v
             await navigator.clipboard.writeText(outputText);
             setCopyStatus('copied');
             
-            // Reset back to idle after 4 seconds
+            // Reset copy button ack to idle after 4 seconds
             setTimeout(() => {
                 setCopyStatus('idle');
             }, 4000);
