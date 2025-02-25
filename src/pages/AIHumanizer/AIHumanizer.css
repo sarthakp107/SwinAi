@@ -1,140 +1,466 @@
-.tool-container {
-    max-width: 1200px;
-    margin: 0 auto;    
+:root {
+  --primary-red: #ff3366;
+  --dark-red: #cc1f46;
+  --off-white: #f8f9fa;
+  --dark: #1a1a1a;
+  --gradient-red: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+  --space-shadow: 0 0 50px rgba(255, 51, 102, 0.2);
+  --neon-glow: 0 0 10px rgba(255, 51, 102, 0.5),
+               0 0 20px rgba(255, 51, 102, 0.3),
+               0 0 30px rgba(255, 51, 102, 0.2);
 }
 
+.tool-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    position: relative;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+/* Enhanced Particle System */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+/* Show particles when loading */
+.particles.loading {
+    opacity: 0.7;
+}
+
+/* Use pseudo-elements for particles instead of DOM elements */
+.particles::before,
+.particles::after {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: var(--primary-red);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 2px var(--primary-red),
+        20vw 10vh 2px var(--primary-red),
+        40vw 30vh 2px var(--primary-red),
+        60vw 50vh 2px var(--primary-red);
+    opacity: 0.5;
+    animation: circleLoadingParticle 4s infinite linear;
+    will-change: transform;
+}
+
+.particles::after {
+    animation: circleLoadingParticle 4s infinite linear reverse;
+    box-shadow: 
+        15vw 5vh 2px var(--primary-red),
+        35vw 25vh 2px var(--primary-red),
+        55vw 45vh 2px var(--primary-red),
+        75vw 65vh 2px var(--primary-red);
+}
+
+/* Remove the individual particle classes since we're using pseudo-elements */
+.particle {
+    display: none;
+}
+
+/* Update animations for smoother performance */
+@keyframes floatParticle {
+    0% {
+        transform: translateY(100vh) translateX(-100vw);
+    }
+    100% {
+        transform: translateY(-100vh) translateX(100vw);
+    }
+}
+
+@keyframes floatParticleReverse {
+    0% {
+        transform: translateY(-100vh) translateX(100vw);
+    }
+    100% {
+        transform: translateY(100vh) translateX(-100vw);
+    }
+}
+
+/* Enhanced Header */
 .tool-header {
     text-align: center;
-    margin-bottom: 1rem;
+    margin-bottom: 3rem;
+    position: relative;
+    transform-style: preserve-3d;
 }
 
 .tool-header h1 {
-    font-size: 2.5rem;
-    color: #333;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: var(--dark);
+    -webkit-text-fill-color: var(--dark);
+    position: relative;
+    animation: titleFloat 6s ease-in-out infinite;
+    text-shadow: var(--neon-glow);
+}
+
+.tool-header h1::before {
+    display: none;
+}
+
+.tool-header::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 100px;
+    background: url('data:image/svg+xml,...') center/contain no-repeat;
+    animation: float 3s ease-in-out infinite;
 }
 
 .tool-header p {
     font-size: 1.2rem;
     color: #666;
+    animation: fadeIn 1s ease-in;
 }
 
+/* Enhanced Content Area */
 .tool-content {
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    box-shadow: var(--space-shadow);
+    position: relative;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
 }
 
-.input-section, .output-section {
-    margin-bottom: 2rem;
+/* Update the tool-content border animation */
+.tool-content::before,
+.tool-content::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 25px;
+    padding: 2px;
+    background: linear-gradient(45deg, 
+        transparent 0%, 
+        rgba(255, 51, 102, 0.1) 50%,
+        transparent 100%);
+    mask: linear-gradient(#fff 0 0) content-box, 
+          linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0; /* Hide by default */
+    animation: none; /* No animation by default */
+    transition: opacity 0.3s ease;
 }
 
-.input-section h2, .output-section h2 {
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 1rem;
+/* Show and animate the border only when loading */
+.tool-content.loading::before {
+    opacity: 1;
+    animation: borderRotate 4s linear infinite;
 }
 
-textarea {
-    width: 100%;
+.tool-content.loading::after {
+    opacity: 1;
+    animation: borderRotate 4s linear infinite reverse;
+}
+
+@keyframes borderRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Optional: Add a subtle hover effect instead */
+.tool-content:hover::before {
+    background: linear-gradient(45deg, 
+        transparent 0%, 
+        rgba(255, 51, 102, 0.2) 50%, 
+        transparent 100%);
+    transition: background 0.3s ease;
+}
+
+/* Enhanced Input/Output Areas */
+textarea, .output-box {
+    width: 98%;
     min-height: 200px;
-    padding: 1rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    font-size: 1rem;
-    line-height: 1.5;
-    resize: vertical;
-    transition: all 0.3s ease;
+    padding: 1.5rem;
+    border: none;
+    border-radius: 15px;
+    background: rgba(248, 249, 250, 0.95);
+    font-family: 'Space Mono', monospace;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+    margin: 5px;
 }
 
 textarea:focus {
     outline: none;
-    border-color: #4CAF50;
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    transform: scale(1.02);
+    box-shadow: var(--neon-glow);
 }
 
+/* Enhanced Button */
 .action-button {
+    background: var(--gradient-red);
+    border: none;
+    border-radius: 50px;
+    padding: 1.2rem 2.8rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transform-style: preserve-3d;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(255, 51, 102, 0.15);
+    backdrop-filter: blur(5px);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    width: 100%;
-    max-width: 300px;
-    margin: 2rem auto;
-    padding: 1rem 2rem;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    gap: 10px;
+    letter-spacing: 0.5px;
+    margin: 0 auto;
 }
 
-.action-button:hover:not(:disabled) {
-    background: #45a049;
+.action-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0.2),
+        rgba(255, 255, 255, 0.1)
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.action-button:hover {
     transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(255, 51, 102, 0.2);
 }
 
-.action-button:disabled {
-    background: #cccccc;
-    cursor: not-allowed;
+.action-button:hover::before {
+    opacity: 1;
 }
 
-.icon {
-    font-size: 1.2rem;
+.action-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 5px 15px rgba(255, 51, 102, 0.15);
 }
 
+/* Add a subtle shine effect */
+.action-button::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    transform: rotate(45deg);
+    animation: buttonShine 6s linear infinite;
+    pointer-events: none;
+}
+
+/* Loading state animations */
+.processing {
+    position: relative;
+}
+
+.processing::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, var(--primary-red) 0%, transparent 70%);
+    opacity: 0.1;
+    animation: processingPulse 2s infinite;
+}
+
+/* Enhanced spinner */
 .spinner {
-    width: 20px;
-    height: 20px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     border-top-color: white;
-    animation: spin 1s linear infinite;
+    animation: spinnerRotate 1s infinite linear;
+    position: relative;
 }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
+.spinner::before, .spinner::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    animation: spinnerOrbit 2s infinite ease-in-out;
+}
+
+/* New Animations */
+@keyframes glowText {
+    0% { text-shadow: 0 0 10px rgba(255, 51, 102, 0.5); }
+    100% { text-shadow: 0 0 20px rgba(255, 51, 102, 0.8); }
+}
+
+@keyframes contentPulse {
+    0% { box-shadow: var(--space-shadow); }
+    100% { box-shadow: 0 0 70px rgba(255, 51, 102, 0.3); }
+}
+
+@keyframes buttonShine {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    50%, 100% { transform: translateX(100%) rotate(45deg); }
+}
+
+@keyframes processingPulse {
+    0%, 100% { transform: scale(1); opacity: 0.1; }
+    50% { transform: scale(1.1); opacity: 0.2; }
+}
+
+@keyframes spinnerOrbit {
+    0% { transform: rotate(0deg) translateX(10px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(10px) rotate(-360deg); }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes float {
+    0% { transform: translateY(-20px); }
+    50% { transform: translateY(0); }
+    100% { transform: translateY(-20px); }
+}
+
+@keyframes titleFloat {
+    0%, 100% { transform: translateY(0) rotateX(0); }
+    50% { transform: translateY(-10px) rotateX(5deg); }
+}
+
+@keyframes glowPulse {
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* Remove the gooey filter since we're using a simpler approach */
+@supports (filter: url('#gooey')) {
+    body::after {
+        display: none;
     }
 }
 
-.output-box {
-    background: #f8f9fa;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 1rem;
-    min-height: 200px;
-    line-height: 1.5;
-    color: #333;
+/* Modern Media Queries */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+
+
+@media screen and (max-width: 768px) {
     .tool-container {
         padding: 1rem;
+        perspective: none;
     }
-
-    .tool-header h1 {
-        font-size: 2rem;
-    }
-
-    .tool-header p {
-        font-size: 1rem;
-    }
-
+    
     .tool-content {
         padding: 1.5rem;
     }
+}
 
-    textarea, .output-box {
-        min-height: 150px;
+/* Update input/output section spacing */
+.input-section, .output-section {
+    padding: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Remove the background rectangle by updating tool-container::before */
+.tool-container::before {
+    display: none; /* Remove the background rectangle */
+}
+
+/* New circular loading animation */
+@keyframes circleLoadingParticle {
+    0% {
+        transform: rotate(0deg) translateX(30px) rotate(0deg);
     }
-} 
+    100% {
+        transform: rotate(360deg) translateX(30px) rotate(-360deg);
+    }
+}
+
+.output-box-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.output-box {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.copy-button {
+    align-self: flex-start;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #6e6e80;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.copy-button:hover {
+    color: #000;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.copy-button.copied {
+    color: #10a37f;
+    border-color: #10a37f;
+}
+
+.copy-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.copy-button span {
+    font-size: 16px;
+}
+

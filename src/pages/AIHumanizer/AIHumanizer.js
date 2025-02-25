@@ -10,6 +10,10 @@ const AIHumanizer = () => {
     const [inputText, setInputText] = useState('');
     const [outputText, setOutputText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    const [copyStatus, setCopyStatus] = useState('idle');
+
+
     const { humanizeText } = useOpenRouter();
 
     useEffect(() => {
@@ -19,8 +23,13 @@ const AIHumanizer = () => {
         }
     }, [location]);
 
+
     const handleHumanize = async () => {
-        const systemPrompt = `Your task is to humanize the given text to the highest degree possible, ensuring that it mimics the writing style of real students from US and Australian universities before 2022. Your goal is to transform AI-generated content into text that flows naturally, is structured like human writing, and aligns with how students wrote their assignments before the widespread use of AI. Follow these detailed instructions:
+        
+        setIsLoading(true);
+        setOutputText(''); 
+        
+        const systemPrompt = `Your task is to humanize the given text to the highest degree possible, ensuring that it mimics the writing style of real students from US and Australian universities before 2022. Your goal is to transform AI-generated content into text that flows naturally, is structured like human writing, and aligns with how students wrote their assignments before the widespread use of AI. Your output should NOT include your reasoning or thinking, the user MUST NOT see it. Follow these detailed instructions:
 
 1. Sentence Structure & Flow
 - Rewrite sentences to reflect natural human phrasing, cadence, and rhythm.
@@ -68,17 +77,94 @@ const AIHumanizer = () => {
   Be highly natural, nuanced, and readable.
   Bypass all AI detection systems by mimicking pre-AI student writing styles.
 
-Now, process the following text using these rules and return a fully humanized version:`;
+Now, process the following text using these rules and return a fully humanized version. Do not include your reasoning or thinking in the output, the user MUST NOT see it, this is extremely important to follow:`;
 
-        setIsLoading(true);
         try {
+
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${process.env.REACT_APP_OPENROUTER_API_KEY}`,
+                    "HTTP-Referer": window.location.origin,
+                    "X-Title": "AI Humanizer",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    model: "deepseek/deepseek-r1:free",
+                    messages: [
+                        {
+                            "role": "system",
+                            "content": systemPrompt
+                        },
+                        {
+                            "role": "user",
+                            "content": inputText
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 4000,
+                    stream: true 
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`API Error: ${JSON.stringify(errorData)}`);
+            }
+
+            // Streaming reader
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                // Decode the stream chunk and add to buffer
+                buffer += decoder.decode(value);
+                
+                // Split buffer by newlines to process complete messages
+                const lines = buffer.split('\n');
+                buffer = lines.pop(); // Keep the last incomplete line in buffer
+
+                for (const line of lines) {
+                    if (line.trim() === '') continue;
+                    if (line === 'data: [DONE]') continue;
+
+                    try {
+                        const data = JSON.parse(line.replace(/^data: /, ''));
+                        if (data.choices?.[0]?.delta?.content) {
+                            setOutputText(prev => prev + data.choices[0].delta.content);
+                        }
+                    } catch (e) {
+                        console.error('Error parsing stream:', e);
+                    }
+                }
+            }
+
             const humanizedText = await humanizeText(inputText);
             setOutputText(humanizedText || "Could not humanize the text. Please try again.");
+
         } catch (error) {
             console.error('Error:', error);
             setOutputText("An error occurred while humanizing the text.");
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(outputText);
+            setCopyStatus('copied');
+            
+            // Reset copy button ack to idle after 4 seconds
+            setTimeout(() => {
+                setCopyStatus('idle');
+            }, 4000);
+        } catch (err) {
+            console.error('Failed to copy:', err);
         }
     };
 
@@ -94,12 +180,14 @@ Now, process the following text using these rules and return a fully humanized v
 
     return (
         <div className="tool-container">
+            <div className={`particles ${isLoading ? 'loading' : ''}`}></div>
             <div className="tool-header">
                 <h1>👨‍🎓 AI Humanizer</h1>
+
                 <p>Transform robotic AI responses into natural, human-like conversations</p>
             </div>
 
-            <div className="tool-content">
+            <div className={`tool-content ${isLoading ? 'loading' : ''}`}>
                 <div className="input-section">
                     <h2>Input Text</h2>
                     <textarea
@@ -122,7 +210,7 @@ Now, process the following text using these rules and return a fully humanized v
                         </>
                     ) : (
                         <>
-                            <span className="icon">🔄</span>
+                            <span className="icon">🚀</span>
                             Humanize Text
                         </>
                     )}
@@ -130,8 +218,37 @@ Now, process the following text using these rules and return a fully humanized v
 
                 <div className="output-section">
                     <h2>Humanized Output</h2>
-                    <div className="output-box">
-                        {outputText || "Your humanized text will appear here"}
+                    <div className="output-box-container">
+                        <div className="output-box">
+                            {outputText || "Your humanized text will appear here"}
+                        </div>
+                        <button 
+                            className={`copy-button ${copyStatus === 'copied' ? 'copied' : ''}`}
+                            onClick={handleCopy}
+                            title="Copy to clipboard"
+                        >
+                            {copyStatus === 'copied' ? (
+                                <span>✓ Copied!</span>
+                            ) : (
+                                <>
+                                    <svg 
+                                        stroke="currentColor" 
+                                        fill="none" 
+                                        strokeWidth="2" 
+                                        viewBox="0 0 24 24" 
+                                        strokeLinecap="round" 
+                                        strokeLinejoin="round" 
+                                        height="1em" 
+                                        width="1em" 
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                    </svg>
+                                    <span style={{ marginLeft: '4px' }}>Copy</span>
+                                </>
+                            )}
+                        </button>
                     </div>
                 </div>
             </div>
