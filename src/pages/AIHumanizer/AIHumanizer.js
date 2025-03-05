@@ -25,127 +25,58 @@ const AIHumanizer = () => {
 
 
     const handleHumanize = async () => {
-        
         setIsLoading(true);
-        setOutputText(''); 
-        
-        const systemPrompt = `Your task is to humanize the given text to the highest degree possible, ensuring that it mimics the writing style of real students from US and Australian universities before 2022. Your goal is to transform AI-generated content into text that flows naturally, is structured like human writing, and aligns with how students wrote their assignments before the widespread use of AI. Your output should NOT include your reasoning or thinking, the user MUST NOT see it. Follow these detailed instructions:
-
-1. Sentence Structure & Flow
-- Rewrite sentences to reflect natural human phrasing, cadence, and rhythm.
-- Vary sentence length and complexity—mix short, direct sentences with longer, nuanced ones.
-- Avoid robotic or overly structured sentence patterns; incorporate subtle sentence fragments or conversational transitions when natural.
-
-2. Word Choice & Synonyms
-- Replace uncommon AI-preferred words with those a student would naturally use.
-- Maintain discipline-specific terminology when relevant, but avoid excessive formality or jargon.
-- Use contractions where appropriate (e.g., "it's" instead of "it is") to reflect casual human tendencies.
-
-3. Tone & Style Variation
-- Reflect how students naturally write—a blend of formal, semi-formal, and informal tones, depending on context.
-- Use occasional first-person reflections ("I believe," "From my perspective") when appropriate, to add authenticity.
-- Adjust complexity based on subject matter; students in humanities often write fluid, expressive prose, while STEM students favor precise, direct explanations.
-
-4. Logical Transitions & Coherence
-- Ensure smooth, natural transitions between sentences and paragraphs using human-like connectors:
-  AI-like: "This leads to the conclusion that…"
-  Human-like: "Given this, it makes sense that…"
-- Use implicit connections rather than rigidly structured explanations.
-
-5. Formatting & Structural Adjustments
-- Structure text the way real students organize their work:
-  Introduction: Engaging, thesis-driven but subtly introduced.
-  Body Paragraphs: Topic sentences that flow naturally into evidence and explanation rather than rigidly stating them.
-  Conclusion: Summarizes key points while offering slight reflection instead of a mechanical rewording.
-
-6. Common Human Mistakes & Imperfections
-- Introduce occasional, natural minor imperfections that real students make:
-  A slight redundancy in phrasing to mimic human thought processes.
-  A sentence starting with 'And' or 'But' where appropriate.
-  A mild grammatical quirk (e.g., ending a sentence with a preposition occasionally).
-
-7. AI Detection Avoidance
-- DeepSeek should analyze real pre-2022 university essays to replicate their tone, style, and sentence structuring.
-- Avoid patterns common in AI writing, such as:
-  Overuse of transition phrases like "Moreover," "Furthermore" (instead, mix in: "On top of that," "Not to mention," etc.).
-  Predictable structure with each paragraph mechanically formatted the same way.
-- Use semantic diversity—vary phrasing across similar concepts instead of repeating patterns.
-
-8. Final Output Expectation
-- The transformed text should:
-  Read entirely human-written, as if a student from a US or Australian university wrote it before 2022.
-  Be highly natural, nuanced, and readable.
-  Bypass all AI detection systems by mimicking pre-AI student writing styles.
-
-Now, process the following text using these rules and return a fully humanized version. Do not include your reasoning or thinking in the output, the user MUST NOT see it, this is extremely important to follow:`;
-
+        setOutputText('');
+    
+        const systemPrompt = `hi`;
+    
         try {
-
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            const response = await fetch("http://localhost:11500/api/generate", {  // Ollama API endpoint
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${process.env.REACT_APP_OPENROUTER_API_KEY}`,
-                    "HTTP-Referer": window.location.origin,
-                    "X-Title": "AI Humanizer",
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    model: "deepseek/deepseek-r1:free",
-                    messages: [
-                        {
-                            "role": "system",
-                            "content": systemPrompt
-                        },
-                        {
-                            "role": "user",
-                            "content": inputText
-                        }
-                    ],
-                    temperature: 0.7,
-                    max_tokens: 4000,
-                    stream: true 
+                    model: "deepseek-r1:14b",  // Make sure this matches your fine-tuned model's name
+                    prompt: `${systemPrompt}\n\n${inputText}`,  // Concatenate system and user input
+                    stream: true,  // Enable streaming
+                    temperature: 0.7
                 })
             });
-
+    
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(`API Error: ${JSON.stringify(errorData)}`);
             }
-
-            // Streaming reader
+    
+            // Streaming response handling
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let buffer = '';
-
+    
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
-
-                // Decode the stream chunk and add to buffer
+    
                 buffer += decoder.decode(value);
-                
-                // Split buffer by newlines to process complete messages
+    
+                // Since Ollama's response format is simpler, split and process each chunk
                 const lines = buffer.split('\n');
-                buffer = lines.pop(); // Keep the last incomplete line in buffer
-
+                buffer = lines.pop(); // Keep any unfinished line in buffer
+    
                 for (const line of lines) {
                     if (line.trim() === '') continue;
-                    if (line === 'data: [DONE]') continue;
-
+    
                     try {
-                        const data = JSON.parse(line.replace(/^data: /, ''));
-                        if (data.choices?.[0]?.delta?.content) {
-                            setOutputText(prev => prev + data.choices[0].delta.content);
+                        const jsonData = JSON.parse(line);  // Parse Ollama's JSON response
+                        if (jsonData.response) {
+                            setOutputText(prev => prev + jsonData.response);
                         }
                     } catch (e) {
                         console.error('Error parsing stream:', e);
                     }
                 }
             }
-
-            const humanizedText = await humanizeText(inputText);
-            setOutputText(humanizedText || "Could not humanize the text. Please try again.");
-
         } catch (error) {
             console.error('Error:', error);
             setOutputText("An error occurred while humanizing the text.");
@@ -153,6 +84,7 @@ Now, process the following text using these rules and return a fully humanized v
             setIsLoading(false);
         }
     };
+    
 
     const handleCopy = async () => {
         try {
