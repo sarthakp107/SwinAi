@@ -1,5 +1,5 @@
 learning ai
-#Welcome to SwinAi. This is by CHIRAG. This is by CHIRAG2.
+Welcome to SWINAI
 
 # Getting Started with Create React App
 
