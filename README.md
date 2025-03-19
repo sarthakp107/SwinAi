@@ -1,5 +1,5 @@
 learning ai
-Welcome to SWINAI
+Welcome to SWINAI merged to Study
 
 # Getting Started with Create React App
 
