@@ -16,7 +16,7 @@ const useOpenRouter = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer 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`,
+                    'Authorization': `Bearer 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`,
                     'HTTP-Referer': window.location.origin,
                     'X-Title': 'SwinAI'
                 },
